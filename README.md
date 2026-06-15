@@ -1,161 +1,142 @@
-# CareAssist - AI-Powered Healthcare Support Assistant
+# CareAssist: AI-Powered Patient Triage & NGO Coordination Portal
 
-An automated triage and case-management web platform built for NGOs to rapidly receive, prioritize, and coordinate support requests from patients.
+Welcome! I designed and developed **CareAssist**—a full-stack MERN application integrated with Google Gemini AI that automates intake triaging for healthcare support organizations and NGOs. 
 
----
-
-## 📋 Table of Contents
-1. [Problem & Solution](#-problem--solution)
-2. [Tech Stack](#-tech-stack)
-3. [AI Feature Details](#-ai-feature-details)
-4. [NGO Use Cases](#-ngo-use-cases)
-5. [Project Folder Layout](#-project-folder-layout)
-6. [Local Deployment Steps](#-local-deployment-steps)
-7. [Authentication & Verification](#-authentication--verification)
+This platform allows vulnerable patients to submit medical requirements while leveraging Large Language Models (LLMs) to analyze descriptions, assign emergency priority tags, and guide volunteer coordinates for immediate response.
 
 ---
 
-## 🚨 Problem & Solution
+## 🚀 Key Highlights & My Engineering Decisions
 
-### The Problem
-During humanitarian crises, medical shortages, or community emergencies, NGOs receive an overwhelming volume of patient support requests. These range from general inquiries to critical, life-threatening scenarios (e.g. urgent blood requirements or severe pain). Reviewing these requests manually creates response bottlenecks, resulting in delayed care for critical patients.
-
-### The Solution
-**CareAssist** solves this bottleneck by integrating **Google Gemini AI** directly into the patient intake pipeline. When a patient submits a request:
-1. **Gemini AI** immediately analyzes the case description.
-2. It generates a concise **AI Summary**, determines the **Urgency Priority** (High, Medium, or Low) using custom triaging rules, and recommends an **Immediate Action**.
-3. The request is instantly queued on a **Volunteer Dashboard**, where coordinators can search, filter by priority, and immediately contact patients.
+* **Production-Grade MVC Architecture:** I separated concerns strictly across controllers, models, routes, and services on the backend, making it modular and easy to scale.
+* **Resilient AI-Integration (With Fallback):** I integrated the `@google/generative-ai` SDK. To ensure the application is production-ready, I built a local Regex-based **Heuristic Fallback Engine**. If the Gemini API key is missing or encounters a rate limit, the system automatically triages the case safely without crashing.
+* **Secure Token-Based Auth (JWT):** Built robust volunteer access controls, password hashing with `bcryptjs`, and route guards on the React frontend.
+* **Seeded Development Workflow:** I added a boot hook that automatically seeds a volunteer profile if your database is empty, so recruiters and developers can log in instantly without manual database operations.
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ The Tech Stack I Used
 
-- **Frontend:** React (Vite-scaffolded), React Router v6, Tailwind CSS, Axios, Lucide Icons
-- **Backend:** Node.js, Express.js, MVC Architecture
-- **Database:** MongoDB Atlas & Mongoose
-- **AI Integration:** Google Gemini API (`@google/generative-ai`)
-- **Authentication:** JWT (JSON Web Tokens) & Cryptographic Password Hashing (`bcryptjs`)
+* **Frontend:** React, React Router v6, Tailwind CSS, Axios, Lucide Icons
+* **Backend:** Node.js, Express.js
+* **Database:** MongoDB Atlas, Mongoose ODM
+* **AI Engine:** Google Gemini AI API (`gemini-1.5-flash`)
+* **Security:** JSON Web Tokens (JWT), Bcrypt password hashing
 
 ---
 
-## 🧠 AI Feature Details
+## 🧠 How My AI Triage Pipeline Works
 
-After intake, the Express backend makes a structured API call to Gemini.
+When a patient submits a request, my backend sends the case details directly to Gemini with a highly optimized triaging system prompt:
 
-### Prompt Instruction
-```text
-You are a healthcare support assistant.
-Analyze the patient's request of type "[Support Type]".
-Patient's description: "[Description]".
+### The Triaging Prompt
+> *Analyze the patient's request of type "[Support Type]". Patient's description: "[Description]". Determine the priority (High, Medium, Low) and return a structured JSON response.*
 
-Rules:
-High: urgent, emergency, severe pain, blood needed, life threatening
-Medium: medicine support, consultation
-Low: general inquiry
-```
+### Priority Classification Rules I Defined:
+* 🔴 **High Priority:** Urgent, emergency scenarios, severe pain, active bleeding, or blood requirement requests.
+* 🟡 **Medium Priority:** Regular medicine support, standard consultations, and mental health counseling.
+* 🟢 **Low Priority:** General inquiries or information requests.
 
-### Response Format
-Gemini is configured to output JSON matching this structure:
+Gemini returns a clean JSON block which my backend parses and stores:
 ```json
 {
   "priority": "High | Medium | Low",
-  "summary": "short summary",
-  "recommendedAction": "recommended action to take based on request details"
+  "summary": "Short 1-sentence case overview",
+  "recommendedAction": "Action steps for the volunteer"
 }
 ```
 
-### Resilience Fallback
-To ensure maximum availability, the application includes a **Heuristic Fallback Parser**. If the Gemini API key is missing or the external API call fails, the system scans the text using regex matches to categorize the case safely, ensuring the patient's ticket is still recorded and triaged.
+---
+
+## 💻 Features I Built
+
+### 1. Patient Portal & Intake Form
+* Clean, responsive form capturing demographic details, support type, and symptoms.
+* Client-side validation (checks age thresholds, phone formats, and email patterns).
+* Dynamic loading screen with AI analysis status indicator during submission.
+
+### 2. Volunteer Dashboard & Metrics
+* Stat cards displaying Total, High, Medium, and Resolved counts.
+* Interactive AI Insights card demonstrating live resolution rates and top request categories.
+* Real-time search query box and filter buttons (sort dynamically by Priority and Status).
+
+### 3. Patient Case Inspection Page
+* Deep-dive view of patient profiles, symptoms, and contact information.
+* Prominently featured AI Analysis Card detailing Gemini's summary and recommended action.
+* Action buttons to update ticket status ("Mark In Progress", "Mark Resolved") and quick links to directly call (`tel:`) or email (`mailto:`) the patient in a single click.
 
 ---
 
-## 🤝 NGO Use Cases
+## 📂 Code Layout
 
-- **Immediate Blood Drive Alerts:** A patient requesting a blood requirement automatically triggers a "High Priority" flag, helping volunteers contact donors immediately.
-- **Triage Dashboard:** Volunteers can filter out low-priority inquiries to focus fully on severe medical and mental health consultation needs.
-- **Integrated Patient Contacts:** Action links allow volunteers to dial patient numbers (`tel:`) or open emails (`mailto:`) directly from their browser, cutting coordination latency to seconds.
-
----
-
-## 📂 Project Folder Layout
-
+Here is the directory structure I created:
 ```
-AI Powered - Health Care Support/
+CareAssist/
 ├── backend/
-│   ├── config/             # Database & third-party API configs
-│   ├── controllers/        # Request, auth, and analytics controllers
-│   ├── middleware/         # Auth protect token check
-│   ├── models/             # SupportRequest and User schemas
-│   ├── routes/             # API Router endpoints
-│   ├── services/           # Gemini AI integration service
-│   ├── server.js           # Server configuration & bootstrap
-│   └── verify-api.js       # Local backend validation script
+│   ├── config/             # Database connection & API setups
+│   ├── controllers/        # Request, Auth, and Analytics endpoints logic
+│   ├── middleware/         # Route guarding (JWT token validation)
+│   ├── models/             # Mongoose schemas (SupportRequest, User)
+│   ├── routes/             # Express routing setup
+│   ├── services/           # Gemini AI API and Fallback Heuristics
+│   ├── server.js           # Server bootstrap & default seeder
+│   └── verify-api.js       # CLI validation script I wrote
 └── frontend/
     ├── src/
-    │   ├── components/     # UI components (e.g. ProtectedRoute)
-    │   ├── hooks/          # useAuth hook
-    │   ├── layouts/        # MainLayout (Header, Nav, Footer)
-    │   ├── pages/          # LandingPage, PatientForm, Success, Login, Dashboard, Details
-    │   ├── services/       # Axios API client & Auth API calls
-    │   └── App.jsx         # App router mount
-    └── tailwind.config.js  # Color tokens and stylesheet paths
+    │   ├── components/     # Reusable layout guards (ProtectedRoute)
+    │   ├── hooks/          # useAuth context provider hook
+    │   ├── layouts/        # Header, Navbars, and Footers wrapper
+    │   ├── pages/          # Landing, PatientForm, Success, Login, Dashboard, Details
+    │   ├── services/       # Axios API client connection
+    │   └── App.jsx         # Routes mapping
+    └── tailwind.config.js  # Styling themes and tokens
 ```
 
 ---
 
-## 🚀 Local Deployment Steps
+## ⚙️ How to Run this Project Locally
 
-### 1. Prerequisites
-- **Node.js** (v16 or higher)
-- **MongoDB** (running locally on port 27017 or a MongoDB Atlas URI)
-
-### 2. Backend Setup
-1. Open a terminal in the `backend/` directory:
+### 1. Setup Backend Environment Configuration
+1. Open your terminal and go to the `backend` folder:
    ```bash
    cd backend
    ```
-2. Create your `.env` configuration file:
+2. Copy the template variable file to create your active `.env`:
    ```bash
    cp .env.example .env
    ```
-3. Open `.env` and fill in your variables:
+3. Open `.env` and fill in your details:
    ```env
    PORT=5000
-   MONGO_URI=mongodb://127.0.0.1:27017/healthcare-support
+   MONGO_URI=mongodb://127.0.0.1:27017/healthcareSupport_DB
    JWT_SECRET=supersecretjwtsecretkeychangeinproduction
    GEMINI_API_KEY=your_gemini_api_key_here
    ```
-4. Start the backend development server:
+4. Start the backend:
    ```bash
    npm run dev
    ```
 
-### 3. Frontend Setup
-1. Open a new terminal in the `frontend/` directory:
+### 2. Run the Frontend
+1. Open a new terminal window, and go to the `frontend` folder:
    ```bash
-   cd ../frontend
+   cd frontend
    ```
-2. Install frontend dependencies:
+2. Install the node packages:
    ```bash
    npm install
    ```
-3. Start the Vite React development server:
+3. Start the client server:
    ```bash
    npm run dev
    ```
-4. Access the web app in your browser at `http://localhost:5173`.
+4. Open your browser to **`http://localhost:5173`**.
 
 ---
 
-## 🔒 Authentication & Verification
+## 🔑 Recruiter Demo Access Credentials
 
-On server startup, CareAssist automatically seeds a default volunteer user if none exists in the database.
+To access the volunteer coordination hub without manually registering accounts, I seeded a default volunteer profile in the start database:
 
-- **Volunteer Username:** `volunteer@ngo.org`
-- **Volunteer Password:** `password123`
-
-You can verify server connectivity, Mongoose mapping, and AI categorization heuristics at any time by running:
-```bash
-cd backend
-node verify-api.js
-```
+* **Volunteer Username:** `volunteer@ngo.org`
+* **Volunteer Password:** `password123`
