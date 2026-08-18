@@ -9,7 +9,7 @@ connectDB();
 
 // Seed default credentials
 seedDefaultVolunteer();
-
+// 
 const app = express();
 
 // Middlewares
