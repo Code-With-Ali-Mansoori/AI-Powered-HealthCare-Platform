@@ -35,13 +35,13 @@ jobs:
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
+        
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
+
           script: |
-            cd /home/ubuntu/my-app
-
+            cd /home/ubuntu/AI-Powered-HealthCare-Platform
             docker compose pull
-
             docker compose up -d --force-recreate
