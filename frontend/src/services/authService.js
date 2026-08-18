@@ -28,7 +28,9 @@ const getCurrentUser = () => {
   if (userStr) {
     try {
       return JSON.parse(userStr);
-    } catch (e) {
+    } catch (error) {
+      console.log(error);
+      
       return null;
     }
   }

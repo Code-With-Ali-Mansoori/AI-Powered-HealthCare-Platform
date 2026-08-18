@@ -1,20 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import API from '../services/api';
-import { 
-  Users, AlertCircle, FileText, CheckCircle2, Search, Filter, 
-  RefreshCw, Brain, Sparkles, TrendingUp, ChevronRight, Activity, ArrowUpRight
+import {
+  Users, AlertCircle, FileText, CheckCircle2, Search, Filter,
+  RefreshCw, Brain, Sparkles, TrendingUp, ChevronRight, Activity
 } from 'lucide-react';
 
 const DashboardPage = () => {
   const [requests, setRequests] = useState([]);
   const [stats, setStats] = useState(null);
-  
+
   // Filters and search state
   const [search, setSearch] = useState('');
   const [priority, setPriority] = useState('All');
   const [status, setStatus] = useState('All');
-  
+
   const [loadingRequests, setLoadingRequests] = useState(true);
   const [loadingStats, setLoadingStats] = useState(true);
   const [error, setError] = useState('');
@@ -34,14 +34,15 @@ const DashboardPage = () => {
   };
 
   // Fetch requests
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(
+    async () => {
     setLoadingRequests(true);
     try {
       const params = {};
       if (search.trim()) params.search = search;
       if (priority !== 'All') params.priority = priority;
       if (status !== 'All') params.status = status;
-      
+
       const response = await API.get('/requests', { params });
       setRequests(response.data);
     } catch (err) {
@@ -50,11 +51,13 @@ const DashboardPage = () => {
     } finally {
       setLoadingRequests(false);
     }
-  };
+  },
+    [search, priority, status],
+  );
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  // useEffect(() => {
+  //   fetchStats();
+  // }, []);
 
   useEffect(() => {
     // Debounce search/filter requests load
@@ -63,7 +66,7 @@ const DashboardPage = () => {
     }, 300);
 
     return () => clearTimeout(delayDebounce);
-  }, [search, priority, status]);
+  }, [search, priority, status, fetchRequests]);
 
   const handleRefresh = () => {
     fetchStats();
@@ -91,7 +94,7 @@ const DashboardPage = () => {
   return (
     <div className="bg-slate-50 min-h-screen py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        
+
         {/* Page Header */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
@@ -178,7 +181,7 @@ const DashboardPage = () => {
             <Brain className="h-6 w-6 text-blue-100" />
             <h2 className="text-lg font-bold">AI Diagnostics & Trends</h2>
           </div>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {/* Urgent Cases Metric */}
             <div className="bg-white/10 backdrop-blur-md rounded-xl p-4 border border-white/10">
@@ -217,8 +220,8 @@ const DashboardPage = () => {
                 <span className="text-sm text-blue-100">of requests solved</span>
               </div>
               <div className="w-full bg-white/20 rounded-full h-1.5 mt-3">
-                <div 
-                  className="bg-emerald-300 h-1.5 rounded-full transition-all duration-500" 
+                <div
+                  className="bg-emerald-300 h-1.5 rounded-full transition-all duration-500"
                   style={{ width: `${loadingStats ? 0 : stats?.resolutionPercentage || 0}%` }}
                 ></div>
               </div>
@@ -231,7 +234,7 @@ const DashboardPage = () => {
           {/* Filters Bar */}
           <div className="p-5 border-b border-slate-100 flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between bg-slate-50/50">
             <h2 className="text-lg font-bold text-slate-900 flex-shrink-0">Support Tickets Log</h2>
-            
+
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:max-w-3xl">
               {/* Search */}
               <div className="relative">
@@ -306,8 +309,8 @@ const DashboardPage = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-100 text-sm">
                   {requests.map((req) => (
-                    <tr 
-                      key={req._id} 
+                    <tr
+                      key={req._id}
                       className="hover:bg-slate-50/50 transition cursor-pointer"
                       onClick={() => window.location.href = `/dashboard/requests/${req._id}`}
                     >
@@ -347,7 +350,7 @@ const DashboardPage = () => {
 
                       {/* Action Arrow */}
                       <td className="px-6 py-4 whitespace-nowrap text-right text-slate-400">
-                        <Link 
+                        <Link
                           to={`/dashboard/requests/${req._id}`}
                           onClick={(e) => e.stopPropagation()} // Stop navigation trigger double hit
                           className="inline-flex items-center text-blue-600 hover:text-blue-700 font-bold space-x-0.5 text-xs bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg transition"
@@ -363,7 +366,7 @@ const DashboardPage = () => {
             )}
           </div>
         </div>
-        
+
       </div>
     </div>
   );

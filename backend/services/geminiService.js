@@ -1,8 +1,8 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
-// Helper for local heuristic analysis in case Gemini API is not available or fails
+//Manually Analyzing suggestions without AI [ If AI not available ]
 const localFallbackAnalysis = (supportType, description) => {
-  console.log('Using local heuristic analysis fallback...');
+  console.log('Using local analysis fallback...');
   const text = (supportType + ' ' + description).toLowerCase();
 
   let priority = 'Low';
@@ -39,8 +39,9 @@ const localFallbackAnalysis = (supportType, description) => {
     summary,
     recommendedAction
   };
-};
+};  
 
+//Suggestion and Analyzing via AI
 const analyzeRequest = async (supportType, description) => {
   const apiKey = process.env.GEMINI_API_KEY;
 
@@ -96,7 +97,7 @@ Return ONLY a valid JSON object matching this schema. Do not output any markdown
     try {
       parsedResult = JSON.parse(responseText);
     } catch (parseErr) {
-      // Sometimes models wrap responses in ```json ... ``` despite instructions
+
       const jsonMatch = responseText.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         parsedResult = JSON.parse(jsonMatch[0]);
