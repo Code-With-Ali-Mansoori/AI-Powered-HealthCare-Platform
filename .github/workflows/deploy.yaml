@@ -50,20 +50,20 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.yml"
+          source: "docker-ec2-compose.yml"
           target: "/home/ubuntu/AI-Powered-HealthCare-Platform"
 
       # =========================
       # Copy NGINX Config to EC2
       # # =========================
-      # - name: Copy NGINX Config
-      #   uses: appleboy/scp-action@v1.0.0
-      #   with:
-      #     host: ${{ secrets.EC2_HOST }}
-      #     username: ${{ secrets.EC2_USERNAME }}
-      #     key: ${{ secrets.EC2_SSH_KEY }}
-      #     source: "nginx/nginx.conf"
-      #     target: "/home/ubuntu/AI-Powered-HealthCare-Platform"
+      - name: Copy NGINX Config
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "nginx/nginx.conf"
+          target: "/home/ubuntu/AI-Powered-HealthCare-Platform"
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
