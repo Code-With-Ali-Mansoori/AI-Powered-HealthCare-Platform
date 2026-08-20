@@ -50,7 +50,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-ec2-compose.yml"
+          source: "docker-compose.yml"
           target: "/home/ubuntu/AI-Powered-HealthCare-Platform"
 
       # =========================
@@ -77,16 +77,16 @@ jobs:
             cd /home/ubuntu/AI-Powered-HealthCare-Platform
 
             echo "===== Checking Compose File ====="
-            sudo docker compose -f docker-ec2-compose.yml config
+            sudo docker compose config
 
             echo "===== Pulling Latest Images ====="
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/backend:latest
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/frontend:latest
 
             echo "===== Stopping Old Containers ====="
-            sudo docker compose -f docker-ec2-compose.yml down
+            sudo docker compose down
 
             echo "===== Starting Containers ====="
-            sudo docker compose up -f docker-ec2-compose.yml -d --force-recreate --remove-orphans
+            sudo docker compose up -d --force-recreate --remove-orphans
 
             echo "===== Deployment Successful ====="
