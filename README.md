@@ -16,7 +16,7 @@ A full-stack **MERN** application I built to help NGOs automatically receive, an
 ## 🛠️ The Stack
 **MongoDB Atlas** | **Express.js** | **React.js** | **Node.js** | **Tailwind CSS** | **Google Gemini API**
 
----
+----
 
 ## 🔑 Recruiter Demo Login
 I configured the backend to automatically seed a volunteer account on startup so you don't have to register:
