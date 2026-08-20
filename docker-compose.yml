@@ -1,9 +1,10 @@
 services:
 
   frontend:
-    build:  
-      context: ./frontend
-      dockerfile: dockerfile
+    image: aliahmedmansoori01/frontend:latest
+    # build:  
+    #   context: ./frontend
+    #   dockerfile: dockerfile
     container_name: frontend
     restart: unless-stopped
     depends_on:
@@ -12,9 +13,10 @@ services:
       - app-network
 
   backend:
-    build: 
-      context: ./backend
-      dockerfile: dockerfile
+    image: aliahmedmansoori01/backend:latest
+    # build: 
+    #   context: ./backend
+    #   dockerfile: dockerfile
     container_name: backend
     restart: unless-stopped
     ports:
