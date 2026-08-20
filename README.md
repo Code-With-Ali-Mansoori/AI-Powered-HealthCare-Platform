@@ -43,6 +43,9 @@ I configured the backend to automatically seed a volunteer account on startup so
 4. Start the backend:
    ```bash
    npm run dev
+
+   Chal Ja bhai!!
+   
    ```
 
 ### 2. Frontend Setup
