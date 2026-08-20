@@ -1,7 +1,7 @@
 services:
 
   frontend:
-    image: YOUR_DOCKER_USERNAME/frontend:latest
+    image: aliahmedmansoori01/frontend:latest
     container_name: frontend
     restart: unless-stopped
     depends_on:
@@ -10,7 +10,7 @@ services:
       - app-network
 
   backend:
-    image: YOUR_DOCKER_USERNAME/backend:latest
+    image: aliahmedmansoori01/backend:latest
     container_name: backend
     restart: unless-stopped
     ports:
