@@ -74,7 +74,16 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
 
           script: |
+            set -e
             cd /home/ubuntu/AI-Powered-HealthCare-Platform
+
+            echo "===== Creating Environment File ====="
+            cat > .env << EOF
+            PORT=${{ secrets.PORT }}
+            MONGO_URI=${{ secrets.MONGO_URI }}
+            JWT_SECRET=${{ secrets.JWT_SECRET }}
+            GEMINI_API_KEY=${{secrets.GEMINI_API_KEY}}
+            EOF
 
             echo "===== Checking Compose File ====="
             sudo docker compose config
