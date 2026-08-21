@@ -62,8 +62,8 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "NGINX/nginx.conf"
-          target: "/home/ubuntu/AI-Powered-HealthCare-Platform"
+          source: "nginx/nginx.conf"
+          target: "/home/ubuntu/AI-Powered-HealthCare-Platform/nginx/nginx.conf"
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.2.0
